@@ -12,20 +12,16 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.IBinder;
-import android.os.RemoteException;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
 import com.morgoo.droidplugin.pm.PluginManager;
-import com.morgoo.helper.Log;
 
 import java.io.File;
-
-import static com.morgoo.helper.compat.PackageManagerCompat.INSTALL_FAILED_NOT_SUPPORT_ABI;
-import static com.morgoo.helper.compat.PackageManagerCompat.INSTALL_SUCCEEDED;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener, ServiceConnection {
     private Activity mContext;
@@ -70,7 +66,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void startLoadInner() {
-        File file = new File(Environment.getExternalStorageDirectory() + File.separator + "Download/", "ECG.apk");
+        File file = new File(Environment.getExternalStorageDirectory() + File.separator + "Download/", "aliveecg-3.0.0.apk");
         android.util.Log.e("TAG", "file.path="+file.getAbsolutePath());
         doInstall(file);
     }
@@ -95,15 +91,28 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             android.util.Log.e("TAG", "re="+re);
             PackageManager pm = getActivity().getPackageManager();
             Intent intent = pm.getLaunchIntentForPackage(info.packageName);
+            UserInfo ecgInfo = new UserInfo();
             if (intent != null) {
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                intent.putExtra("email", "jinangood@126.com");
+                intent.putExtra("name", "nan");
+                intent.putExtra("password", "fsdf");
+                intent.putExtra("male", "M");
+                intent.putExtra("dob", "1987-01-09");
+                intent.putExtra("height", 180);
+                intent.putExtra("weight", 76);
+                intent.putExtra("register", false);
+                intent.putExtra("smoker", 1);
+                intent.putExtra("app_user", 0);
+                intent.addCategory(Intent.CATEGORY_LAUNCHER);
                 Log.i("DroidPlugin", "start " + info.packageName + "@" + intent);
                 startActivity(intent);
             } else {
                 Log.e("DroidPlugin", "pm " + pm.toString() + " no find intent " + info.packageName);
             }
+//            ProcessUtils.doStartApplicationWithPackageName(info.packageName, this, new UserInfo());
 
-        } catch (RemoteException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
